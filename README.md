@@ -17,15 +17,15 @@ Instead of using traditional matrix factorization only, this project models reco
 
 The goal is to predict unseen ratings:
 
-\[
-f(u,i) \rightarrow \hat{r}_{ui}
-\]
+$$
+f(u,i)=\hat{r}_{ui}
+$$
 
 Where:
 
-- \(u\) = user  
-- \(i\) = movie  
-- \(\hat{r}_{ui}\) = predicted rating  
+- $u$ = user  
+- $i$ = movie  
+- $\hat{r}_{ui}$ = predicted rating
 
 ---
 
