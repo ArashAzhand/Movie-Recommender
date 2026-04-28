@@ -1,119 +1,141 @@
+# 🎬 Graph Neural Networks for Rating Prediction in Recommender Systems
 
-# Graph Neural Networks for Rating Prediction
-
-This project explores the use of **Graph Neural Networks (GNNs)** for predicting user ratings in recommender systems, using the **MovieLens 100K dataset**.
-
-The goal is to model user–item interactions as a graph and learn meaningful representations that improve rating prediction accuracy compared to traditional methods like matrix factorization.
+A graph-based recommender system built with **PyTorch Geometric** to predict user ratings on movies using the **MovieLens 100K** dataset.  
+This project explores how **Graph Neural Networks (GNNs)** such as **GraphSAGE**, **LightGCN**, and **GAT** can model user-item interactions more effectively than traditional methods.
 
 ---
 
-## Overview
+## 📌 Project Overview
 
-Modern recommender systems (e.g., Netflix, Spotify, Amazon) rely on predicting user preferences. In this project, we:
+Modern platforms like Netflix, Amazon, and Spotify rely heavily on recommender systems to personalize content.
 
-* Formulate recommendation as a **regression problem**
-* Represent the dataset as a **bipartite graph**
-* Apply **Graph Neural Networks** to learn user and item embeddings
-* Compare multiple GNN architectures
+Instead of using traditional matrix factorization only, this project models recommendation data as a **heterogeneous bipartite graph**:
 
----
+- 👤 Users = one node type  
+- 🎥 Movies = another node type  
+- ⭐ Ratings = edges between users and movies  
 
-## Dataset
+The goal is to predict unseen ratings:
 
-We use the **MovieLens 100K** dataset:
-
-*  100,000 ratings
-*  943 users
-*  1682 movies
-*  Ratings from 1 to 5
-
-Each interaction is treated as an edge between a user and a movie.
-
----
-
-##  Problem Formulation
-
-We aim to learn a function:
-
-```
-f(u, i) → r̂_ui
-```
+\[
+f(u,i) \rightarrow \hat{r}_{ui}
+\]
 
 Where:
 
-* `u` = user
-* `i` = movie
-* `r̂_ui` = predicted rating
-
-This is treated as a **regression task**.
+- \(u\) = user  
+- \(i\) = movie  
+- \(\hat{r}_{ui}\) = predicted rating  
 
 ---
 
-##  Graph Representation
+## 🧠 Rating Prediction Formula
 
-* Nodes:
+After learning user and movie embeddings, the predicted rating is computed using their interaction:
 
-  * Users
-  * Movies
-* Edges:
+\[
+\hat{r}_{ui} = 5 \cdot \sigma(e_u^T e_i)
+\]
 
-  * User → Movie (rating interaction)
-  * Movie → User (reverse edges for message passing)
+Where:
 
-Implemented using **PyTorch Geometric (HeteroData)**.
+- \(e_u\) = learned embedding of user \(u\)  
+- \(e_i\) = learned embedding of movie \(i\)  
+- \(e_u^T e_i\) = dot product similarity  
+- \(\sigma(x)\) = sigmoid activation  
 
----
+This bounds predictions into the valid MovieLens rating range:
 
-##  Models Implemented
-
-We experimented with several GNN architectures:
-
-* **GraphSAGE**
-* **LightGCN**
-* **Graph Attention Networks (GAT)**
+\[
+1 \leq \hat{r}_{ui} \leq 5
+\]
 
 ---
 
-## Training
+## 📂 Dataset
 
-* **Loss Function:** Mean Squared Error (MSE)
-* **Evaluation Metric:** Root Mean Squared Error (RMSE)
-* **Cross Validation:** 5-fold
+### MovieLens 100K
 
-Prediction is computed using a **dot product** between user and movie embeddings.
+- 100,000 ratings
+- 943 users
+- 1,682 movies
+- Ratings from **1 to 5**
 
----
+Each record contains:
 
-##  Key Techniques
-
-* Learnable **user & movie embeddings**
-* Feature normalization for stable training
-* Bounding predictions using sigmoid scaling
-* Bidirectional message passing
-* Dot-product predictor instead of MLP
+- User ID  
+- Movie ID  
+- Rating  
+- Timestamp  
 
 ---
 
-##  Results
+## 🏗 Graph Representation
 
-| Model                            | RMSE       | R²         |
-| -------------------------------- | ---------- | ---------- |
-| GraphSAGE (2-layer + embeddings) | **1.0802** | **0.0785** |
-| GraphSAGE (1-layer)              | 1.0927     | 0.0574     |
-| GAT (best variant)               | 1.1242     | 0.0023     |
-| LightGCN                         | 1.5531     | -0.9061    |
+The dataset is converted into a `HeteroData` graph using PyTorch Geometric.
 
- **Best Model:**
- 2-layer GraphSAGE with embeddings
+### Node Types
+
+- `user`
+- `movie`
+
+### Edge Types
+
+- `user -> rates -> movie`
+- `movie -> rev_rates -> user`
+
+Reverse edges are added for bidirectional message passing.
 
 ---
 
-##  Key Observations
+## ⚙️ Models Implemented
 
-* Adding embeddings significantly improves performance
-* Deeper models without embeddings suffer from **oversmoothing**
-* Dropout negatively impacted performance on this small dataset
-* LightGCN underperformed since it is better suited for ranking tasks
-* GAT models are sensitive to missing self-loops
+### 🔹 GraphSAGE
+Neighborhood aggregation using mean pooling.
+
+### 🔹 LightGCN
+Simplified graph convolution for recommendation.
+
+### 🔹 Graph Attention Networks (GAT)
+Uses attention scores to weigh neighbors differently.
+
+---
+
+## 🎯 Training Objective
+
+The model minimizes **Mean Squared Error (MSE)**:
+
+\[
+MSE = \frac{1}{N}\sum(r_{ui}-\hat{r}_{ui})^2
+\]
+
+Evaluation metric:
+
+\[
+RMSE = \sqrt{\frac{1}{N}\sum(r_{ui}-\hat{r}_{ui})^2}
+\]
+
+---
+
+## 📊 Results (5-Fold Cross Validation)
+
+| Model | RMSE | R² |
+|------|------|------|
+| 1-layer GraphSAGE | 1.0927 | 0.0574 |
+| 2-layer GraphSAGE + Dropout | 1.1010 | 0.0428 |
+| ⭐ 2-layer GraphSAGE + Embeddings | **1.0802** | **0.0785** |
+| 2-layer LightGCN + Embeddings | 1.5531 | -0.9061 |
+| 2-layer GAT + Embeddings | 1.1431 | -0.0316 |
+
+---
+
+## 🔍 Key Findings
+
+✅ Adding learnable **user/movie embeddings** significantly improved performance.  
+✅ GraphSAGE was the most stable and accurate architecture.  
+✅ LightGCN underperformed because it is better suited for ranking tasks rather than explicit rating prediction.  
+✅ Deeper models sometimes suffered from oversmoothing.  
+✅ Dropout was not beneficial on this small dataset.
+
 
 
