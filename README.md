@@ -1,19 +1,19 @@
-# 🎬 Graph Neural Networks for Rating Prediction in Recommender Systems
+#  Graph Neural Networks for Rating Prediction in Recommender Systems
 
 A graph-based recommender system built with **PyTorch Geometric** to predict user ratings on movies using the **MovieLens 100K** dataset.  
 This project explores how **Graph Neural Networks (GNNs)** such as **GraphSAGE**, **LightGCN**, and **GAT** can model user-item interactions more effectively than traditional methods.
 
 ---
 
-## 📌 Project Overview
+##  Project Overview
 
 Modern platforms like Netflix, Amazon, and Spotify rely heavily on recommender systems to personalize content.
 
 Instead of using traditional matrix factorization only, this project models recommendation data as a **heterogeneous bipartite graph**:
 
-- 👤 Users = one node type  
-- 🎥 Movies = another node type  
-- ⭐ Ratings = edges between users and movies  
+-  Users = one node type  
+-  Movies = another node type  
+-  Ratings = edges between users and movies  
 
 The goal is to predict unseen ratings:
 
@@ -29,7 +29,7 @@ Where:
 
 ---
 
-## 🧠 Rating Prediction Formula
+##  Rating Prediction Formula
 
 After learning user and movie embeddings, the predicted rating is computed using their interaction:
 
@@ -52,7 +52,7 @@ This bounds predictions into the valid MovieLens rating range:
 
 ---
 
-## 📂 Dataset
+##  Dataset
 
 ### MovieLens 100K
 
@@ -70,7 +70,7 @@ Each record contains:
 
 ---
 
-## 🏗 Graph Representation
+##  Graph Representation
 
 The dataset is converted into a `HeteroData` graph using PyTorch Geometric.
 
@@ -88,20 +88,20 @@ Reverse edges are added for bidirectional message passing.
 
 ---
 
-## ⚙️ Models Implemented
+##  Models Implemented
 
-### 🔹 GraphSAGE
+###  GraphSAGE
 Neighborhood aggregation using mean pooling.
 
-### 🔹 LightGCN
+###  LightGCN
 Simplified graph convolution for recommendation.
 
-### 🔹 Graph Attention Networks (GAT)
+###  Graph Attention Networks (GAT)
 Uses attention scores to weigh neighbors differently.
 
 ---
 
-## 🎯 Training Objective
+##  Training Objective
 
 The model minimizes **Mean Squared Error (MSE)**:
 
@@ -117,7 +117,7 @@ RMSE = \sqrt{\frac{1}{N}\sum(r_{ui}-\hat{r}_{ui})^2}
 
 ---
 
-## 📊 Results (5-Fold Cross Validation)
+##  Results (5-Fold Cross Validation)
 
 | Model | RMSE | R² |
 |------|------|------|
@@ -129,7 +129,7 @@ RMSE = \sqrt{\frac{1}{N}\sum(r_{ui}-\hat{r}_{ui})^2}
 
 ---
 
-## 🔍 Key Findings
+##  Key Findings
 
 ✅ Adding learnable **user/movie embeddings** significantly improved performance.  
 ✅ GraphSAGE was the most stable and accurate architecture.  
